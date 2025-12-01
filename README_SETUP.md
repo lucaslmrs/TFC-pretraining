@@ -10,8 +10,9 @@ Guia completo para configuração e execução do TFC (Time-Frequency Contrastiv
 4. [Estrutura do Projeto](#estrutura-do-projeto)
 5. [Configuração](#configuração)
 6. [Execução do Treinamento](#execução-do-treinamento)
-7. [Cenários de Transfer Learning](#cenários-de-transfer-learning)
-8. [Solução de Problemas](#solução-de-problemas)
+7. [Execução com Docker](#-execução-com-docker)
+8. [Cenários de Transfer Learning](#cenários-de-transfer-learning)
+9. [Solução de Problemas](#solução-de-problemas)
 
 ---
 
@@ -318,6 +319,83 @@ python main.py --training_mode fine_tune_test \
 | `--device` | `cuda`, `cpu` | Dispositivo |
 | `--seed` | `42` (default) | Seed para reprodutibilidade |
 | `--logs_save_dir` | `../experiments_logs` | Diretório de logs |
+
+---
+
+## 🐳 Execução com Docker
+
+### Pré-requisitos Docker
+
+- Docker 20.10+
+- Docker Compose v2
+- NVIDIA Container Toolkit (para GPU)
+
+### Instalação Rápida
+
+```bash
+# 1. Construir imagem
+make build
+
+# 2. Baixar datasets (se ainda não tiver)
+make download-data
+
+# 3. Executar treinamento
+make pretrain
+make finetune
+```
+
+### Comandos Principais
+
+| Comando | Descrição |
+|---------|-----------|
+| `make build` | Construir imagem Docker |
+| `make download-data` | Baixar todos os datasets |
+| `make pretrain` | Pré-treinamento com GPU |
+| `make finetune` | Fine-tuning com GPU |
+| `make train-full` | Pipeline completo |
+| `make shell` | Shell interativo |
+| `make help` | Ver todos os comandos |
+
+### Cenários Pré-definidos
+
+```bash
+make scenario-eeg   # SleepEEG → Epilepsy
+make scenario-har   # HAR → Gesture (GPU 4GB)
+make scenario-fd    # FD_A → FD_B (GPU 8GB+)
+make scenario-ecg   # ECG → EMG
+```
+
+### Personalizar Datasets
+
+```bash
+# Usar variáveis para customizar
+make pretrain PRETRAIN_DATASET=SleepEEG TARGET_DATASET=Epilepsy
+make finetune PRETRAIN_DATASET=SleepEEG TARGET_DATASET=Epilepsy
+```
+
+### Modo CPU (sem GPU)
+
+```bash
+make pretrain-cpu
+make finetune-cpu
+```
+
+### Docker Compose Direto
+
+```bash
+# Com GPU
+docker compose --profile gpu run --rm tfc-gpu \
+    --training_mode pre_train \
+    --pretrain_dataset HAR \
+    --target_dataset Gesture
+
+# Com CPU
+docker compose --profile cpu run --rm tfc-cpu \
+    --training_mode pre_train \
+    --pretrain_dataset HAR \
+    --target_dataset Gesture \
+    --device cpu
+```
 
 ---
 

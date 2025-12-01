@@ -1,0 +1,85 @@
+# ==============================================================================
+# TFC-pretraining Docker Compose
+# Uso: docker compose --profile gpu up
+# ==============================================================================
+
+services:
+  tfc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tfc-pretraining:latest
+    container_name: tfc-training
+    
+    # Volumes persistentes
+    volumes:
+      - ./datasets:/app/datasets:ro
+      - ./code/experiments_logs:/app/code/experiments_logs
+    
+    # Variáveis de ambiente
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=0
+    
+    # Stdin para modo interativo
+    stdin_open: true
+    tty: true
+
+  # ============================================================================
+  # Profile: GPU (default para treinamento)
+  # Uso: docker compose --profile gpu run tfc-gpu [args]
+  # ============================================================================
+  tfc-gpu:
+    extends:
+      service: tfc
+    profiles:
+      - gpu
+    container_name: tfc-gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: >
+      --training_mode pre_train
+      --pretrain_dataset HAR
+      --target_dataset Gesture
+      --device cuda
+
+  # ============================================================================
+  # Profile: CPU (para máquinas sem GPU)
+  # Uso: docker compose --profile cpu run tfc-cpu [args]
+  # ============================================================================
+  tfc-cpu:
+    extends:
+      service: tfc
+    profiles:
+      - cpu
+    container_name: tfc-cpu
+    command: >
+      --training_mode pre_train
+      --pretrain_dataset HAR
+      --target_dataset Gesture
+      --device cpu
+
+  # ============================================================================
+  # Profile: Shell (acesso interativo)
+  # Uso: docker compose --profile shell run tfc-shell
+  # ============================================================================
+  tfc-shell:
+    extends:
+      service: tfc
+    profiles:
+      - shell
+    container_name: tfc-shell
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    entrypoint: /bin/bash
+    command: []
