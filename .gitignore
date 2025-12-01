@@ -6,3 +6,5 @@ datasets
 *.log
 *.pt
 *.zip
+*.placeholder
+next_steps.txt
