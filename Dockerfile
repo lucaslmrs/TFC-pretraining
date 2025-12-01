@@ -16,15 +16,15 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalar Python 3.9 e dependências do sistema
+# Instalar Python 3.10 (padrão do Ubuntu 22.04) e dependências do sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.9 \
-    python3.9-dev \
+    python3 \
+    python3-dev \
     python3-pip \
     curl \
     unzip \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -sf /usr/bin/python3.9 /usr/bin/python \
+    && ln -sf /usr/bin/python3 /usr/bin/python \
     && ln -sf /usr/bin/pip3 /usr/bin/pip
 
 # Atualizar pip

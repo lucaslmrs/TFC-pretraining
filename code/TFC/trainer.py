@@ -196,13 +196,13 @@ def model_finetune(model, model_optimizer, val_dl, config, device, training_mode
         loss = loss_p + l_TF + lam*(loss_t + loss_f)
 
         acc_bs = labels.eq(predictions.detach().argmax(dim=1)).float().mean()
-        onehot_label = F.one_hot(labels)
+        onehot_label = F.one_hot(labels, num_classes=predictions.shape[1])
         pred_numpy = predictions.detach().cpu().numpy()
 
         try:
             auc_bs = roc_auc_score(onehot_label.detach().cpu().numpy(), pred_numpy, average="macro", multi_class="ovr" )
         except:
-            auc_bs = np.float(0)
+            auc_bs = 0.0
         prc_bs = average_precision_score(onehot_label.detach().cpu().numpy(), pred_numpy)
 
         total_acc.append(acc_bs)
@@ -266,14 +266,14 @@ def model_test(model,  test_dl, config,  device, training_mode, classifier=None,
 
             loss = criterion(predictions_test, labels)
             acc_bs = labels.eq(predictions_test.detach().argmax(dim=1)).float().mean()
-            onehot_label = F.one_hot(labels)
+            onehot_label = F.one_hot(labels, num_classes=predictions_test.shape[1])
             pred_numpy = predictions_test.detach().cpu().numpy()
             labels_numpy = labels.detach().cpu().numpy()
             try:
                 auc_bs = roc_auc_score(onehot_label.detach().cpu().numpy(), pred_numpy,
                                    average="macro", multi_class="ovr")
             except:
-                auc_bs = np.float(0)
+                auc_bs = 0.0
             prc_bs = average_precision_score(onehot_label.detach().cpu().numpy(), pred_numpy, average="macro")
             pred_numpy = np.argmax(pred_numpy, axis=1)
 
