@@ -9,6 +9,11 @@ import torch.fft as fft
 def generate_freq(dataset, config):
     X_train = dataset["samples"]
     y_train = dataset['labels']
+    # Convert numpy arrays to tensors if needed
+    if isinstance(X_train, np.ndarray):
+        X_train = torch.from_numpy(X_train)
+    if isinstance(y_train, np.ndarray):
+        y_train = torch.from_numpy(y_train)
     # shuffle
     data = list(zip(X_train, y_train))
     np.random.shuffle(data)
@@ -43,6 +48,11 @@ class Load_Dataset(Dataset):
         self.training_mode = training_mode
         X_train = dataset["samples"]
         y_train = dataset["labels"]
+        # Convert numpy arrays to tensors if needed
+        if isinstance(X_train, np.ndarray):
+            X_train = torch.from_numpy(X_train)
+        if isinstance(y_train, np.ndarray):
+            y_train = torch.from_numpy(y_train)
         # shuffle
         data = list(zip(X_train, y_train))
         np.random.shuffle(data)

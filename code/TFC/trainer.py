@@ -27,7 +27,7 @@ def Trainer(model,  model_optimizer, classifier, classifier_optimizer, train_dl,
             # Train and validate
             """Train. In fine-tuning, this part is also trained???"""
             train_loss = model_pretrain(model, model_optimizer, criterion, train_dl, config, device, training_mode)
-            logger.debug(f'\nPre-training Epoch : {epoch}', f'Train Loss : {train_loss:.4f}')
+            logger.debug(f'\nPre-training Epoch : {epoch} | Train Loss : {train_loss:.4f}')
 
         os.makedirs(os.path.join(experiment_log_dir, "saved_models"), exist_ok=True)
         chkpoint = {'model_state_dict': model.state_dict()}
